@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const {User} = require('../db/schema')
 const {validMid} = require('../midwares/validmid')
-
+const JWT_SECRET = require('../config');
+const {authMid} = require('../midwares/authmid');
 router.use(express.json());
 
-
+const jwt =  require('jsonwebtoken');
+let token ;
 router.post('/signup' , validMid, (req,res)=>{
     const firstName = req.body.fname;
     const lastName = req.body.lname;
@@ -38,6 +40,7 @@ router.post('/signin' ,async (req,res)=>{
     })
     console.log(name);
     if(name){
+        token = jwt.sign({email : email}, JWT_SECRET);
         res.json({
             msg : "User Found",
             id: name._id,
@@ -47,11 +50,12 @@ router.post('/signin' ,async (req,res)=>{
     res.status(403).json({msg : "User Not Found"});
 
 })
-router.put('/update' , (req,res)=>{
+router.put('/update' , authMid, (req,res)=>{
     const firstName = req.body.fname;
     const lastName = req.body.lname;
     const password = req.body.password;
-    const email =  req.headers.email;
+    const email =  req.email;
+    
 User.updateOne({
     email : email
 }, {firstName : firstName, 
