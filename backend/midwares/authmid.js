@@ -1,5 +1,5 @@
 const jwt =  require('jsonwebtoken');
-const {JWT_SECRET} = require('../config');
+const JWT_SECRET = require('../config');
  function authMid(req, res,next){
     const token =  req.headers.token;
     if(!token || !token.startsWith('Bearer')){
@@ -7,6 +7,7 @@ const {JWT_SECRET} = require('../config');
         return;
     }
     const tokenValue = token.split(' ')[1];
+    console.log(tokenValue)
     jwt.verify(tokenValue, JWT_SECRET, (err, decoded)=>{
         if(err){
             res.status(401).json({msg : "Unauthorized"});
@@ -16,3 +17,4 @@ const {JWT_SECRET} = require('../config');
         next();
     })
  }
+ module.exports = {authMid}

@@ -1,2 +1,2 @@
-JWT_SECRET  =  "Harsh";
-module.exports =  {JWT_SECRET}
+JWT_SECRET  =  "HarshITRAI";
+module.exports =  JWT_SECRET //EXPORT without braces otherwise it will be sent as object
