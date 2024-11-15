@@ -13,9 +13,10 @@ router.post('/signup', validMid, async (req, res) => {
     const lastName = req.body.lname;
     const password = req.body.password;
     const email = req.body.email;
-    let existingUser = await User.find({
+    let existingUser = await User.findOne({         //IF PUT FIND here instead returns EMPTYlist
         email: email
     });
+    console.log(existingUser)
     if (existingUser) {
         res.json({
             msg: "Email / Already exists"

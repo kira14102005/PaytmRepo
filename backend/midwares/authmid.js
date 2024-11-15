@@ -7,7 +7,7 @@ const JWT_SECRET = require('../config');
         return;
     }
     const tokenValue = token.split(' ')[1];
-    console.log(tokenValue)
+    // console.log(tokenValue)
     jwt.verify(tokenValue, JWT_SECRET, (err, decoded)=>{
         if(err){
             res.status(401).json({msg : "Unauthorized"});
