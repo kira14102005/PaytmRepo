@@ -40,4 +40,4 @@ const balanceSchema = mong.Schema({
 const Balance = new mong.model('BalanceTable', balanceSchema)
 const User = mong.model('UserTable', userSchema);
 
-module.exports = { User };
+module.exports = { User ,Balance};

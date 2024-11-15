@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../db/schema')
+const { User, Balance } = require('../db/schema')
 const { validMid } = require('../midwares/validmid')
 const JWT_SECRET = require('../config'); //IMPORT without object  destructuring
 const { authMid } = require('../midwares/authmid');
@@ -8,27 +8,37 @@ router.use(express.json());
 
 const jwt = require('jsonwebtoken');
 let token;
-router.post('/signup', validMid, (req, res) => {
+router.post('/signup', validMid, async (req, res) => {
     const firstName = req.body.fname;
     const lastName = req.body.lname;
     const password = req.body.password;
     const email = req.body.email;
-    User.create({
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-    }).then((data) => {
-        console.log(data);
-        res.status(200).json({
-            msg: "Ok Created Record Success"
-        })
-    }).catch((err) => {
-        console.log(err);
+    let existingUser = await User.find({
+        email: email
+    });
+    if (existingUser) {
         res.json({
-            msg: "Error in Creating Record"
+            msg: "Email / Already exists"
         })
-    })
+    }
+    try {
+        const user = await User.create({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+        });
+        const newAC = await Balance.create({
+            userId: user._id,
+            balance: Number((Math.random() * 10000))
+        })
+        res.json(user);
+    }
+    catch (err){
+        res.status(500).json({
+            msg : "ERROR OCURRED",
+        })
+    }
 
 })
 router.post('/signin', async (req, res) => {
@@ -40,7 +50,7 @@ router.post('/signin', async (req, res) => {
     })
     console.log(JWT_SECRET);
     if (name) {
-        
+
         token = jwt.sign({ email: email }, JWT_SECRET);
         res.json({
             msg: "User Found",
@@ -61,7 +71,7 @@ router.put('/update', authMid, (req, res) => {
     User.updateOne({
         email: email
     }, {
-      firstName : firstName,
+        firstName: firstName,
         lastName: lastName,
         password: password,
     }).then((data) => {
@@ -90,13 +100,15 @@ router.get('/bulk', authMid, async (req, res) => {
             lastName: {
                 "$regex": filter,
             }
-        },  ]
+        },]
     })
     res.json({
-        Users : users.map((obj)=>{
-            return { FirstName : obj.firstName,
-                LastName : obj.lastName,
-                Email : obj.email}
+        Users: users.map((obj) => {
+            return {
+                FirstName: obj.firstName,
+                LastName: obj.lastName,
+                Email: obj.email
+            }
         })
     })
 })
