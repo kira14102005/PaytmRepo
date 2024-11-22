@@ -30,6 +30,7 @@ export function Signup() {
         <SubmitButton onClick={async()=>{
             const res = await axios.post('http://localhost:3000/v1/user/signup',{email:email,password:password ,fname, lname});
             console.log(res.data);
+            localStorage.setItem('token', res.data.token);
            }} a={"Signup"} />
         <Linker tgt="/login" body="Already have an account? Login" />
       </div>

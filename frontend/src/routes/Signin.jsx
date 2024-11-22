@@ -24,6 +24,7 @@ export function Login(){
            <SubmitButton onClick={async()=>{
             const res = await axios.post('http://localhost:3000/v1/user/signin',{email:email,password:password});
             console.log(res.data);
+            localStorage.setItem('token', res.data.token);  //LOCAL STORAGE
            }} a = {"Login"}></SubmitButton>
            <Linker tgt={"/signup"}body={"Don't have an account? Register"}/>
         </div></div>
